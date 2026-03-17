@@ -16,9 +16,19 @@
 
     <div class="w-full max-w-2xl mx-auto flex flex-col items-center">
 
-        <div class="text-center mb-6">
-            <h1 class="text-3xl font-bold font-serif">Connections</h1>
-            <p class="text-gray-600 mt-1">Create four groups of four!</p>
+        <div class="text-center mb-6 relative w-full flex justify-center items-center min-h-[40px]">
+
+            <a href="{{ route('archive') }}" wire:navigate class="absolute left-0 text-sm font-semibold text-gray-500 hover:text-black flex items-center gap-1 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+                </svg>
+                Archive
+            </a>
+
+            <div>
+                <h1 class="text-3xl font-bold font-serif">Connections</h1>
+                <p class="text-gray-600 mt-1 font-medium">{{ $puzzle->title }}</p>
+            </div>
         </div>
 
         <div class="mb-8 w-full" :class="{ 'animate-shake': shake }">

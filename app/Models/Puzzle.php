@@ -6,6 +6,10 @@ namespace App\Models;
 
 final class Puzzle extends Model
 {
+    protected $casts = [
+        'play_date' => 'datetime',
+    ];
+
     protected static $unguarded = true;
 
     public function categories()

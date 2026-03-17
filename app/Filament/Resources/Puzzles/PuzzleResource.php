@@ -39,6 +39,10 @@ class PuzzleResource extends Resource
             ->components([
                 Section::make('Puzzle Details')
                     ->schema([
+                        TextInput::make('title')
+                            ->required()
+                            ->placeholder('e.g., Puzzle #12')
+                            ->columnSpanFull(),
                         DatePicker::make('play_date')
                             ->required()
                             ->unique(ignoreRecord: true),
@@ -104,6 +108,9 @@ class PuzzleResource extends Resource
     {
         return $table
             ->columns([
+                TextColumn::make('title')
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('play_date')
                     ->date()
                     ->sortable(),

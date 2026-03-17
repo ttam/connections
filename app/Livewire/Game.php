@@ -19,14 +19,15 @@ final class Game extends Component
 
     public array $guesses = [];
 
-    public function mount(): void
+    public function mount(?string $id = null): void
     {
-        // Fetch today's published puzzle
-        $this->puzzle = Puzzle::with('categories.words')
+        $query = Puzzle::with('categories.words')
             ->where('is_published', true)
-            ->whereDate('play_date', '<=', \now())
-            ->orderBy('play_date', 'desc')
-            ->firstOrFail();
+            ->whereDate('play_date', '<=', \now());
+
+        $this->puzzle = $id === null
+            ? $query->orderBy('play_date', 'desc')->firstOrFail()
+            : $query->findOrFail($id);
 
         $this->mistakesRemaining = $this->puzzle->max_mistakes;
         $this->initializeBoard();
