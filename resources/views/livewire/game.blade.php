@@ -29,6 +29,14 @@
                 <h1 class="text-3xl font-bold font-serif">Connections</h1>
                 <p class="text-gray-600 mt-1 font-medium">{{ $puzzle->title }}</p>
             </div>
+
+            <form method="POST" action="{{ route('filament.admin.auth.logout') }}" class="absolute right-0">
+                @csrf
+                <button type="submit" class="text-sm font-semibold text-gray-500 hover:text-black transition-colors">
+                    Log Out
+                </button>
+            </form>
+
         </div>
 
         <div class="mb-8 w-full" :class="{ 'animate-shake': shake }">

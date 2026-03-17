@@ -1,7 +1,18 @@
 <div class="max-w-4xl mx-auto p-4">
-    <div class="text-center mb-10">
-        <h1 class="text-4xl font-bold font-serif">Puzzle Archive</h1>
-        <p class="text-gray-600 mt-2">Play past games</p>
+    <div class="text-center mb-6 relative w-full flex justify-center items-center min-h-[40px]">
+
+        <div class="text-center mb-10">
+            <h1 class="text-4xl font-bold font-serif">Puzzle Archive</h1>
+            <p class="text-gray-600 mt-2">Play past games</p>
+        </div>
+
+        <form method="POST" action="{{ route('filament.admin.auth.logout') }}" class="absolute right-0">
+            @csrf
+            <button type="submit" class="text-sm font-semibold text-gray-500 hover:text-black transition-colors">
+                Log Out
+            </button>
+        </form>
+
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
