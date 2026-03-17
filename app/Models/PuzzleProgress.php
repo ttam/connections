@@ -13,4 +13,9 @@ final class PuzzleProgress extends Model
         'solved_category_ids' => 'array',
         'current_word_order' => 'array',
     ];
+
+    public function puzzle()
+    {
+        return $this->belongsTo(Puzzle::class);
+    }
 }

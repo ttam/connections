@@ -38,6 +38,11 @@ class User extends Authenticatable
         'remember_token',
     ];
 
+    public function puzzleProgresses()
+    {
+        return $this->hasMany(PuzzleProgress::class);
+    }
+
     /**
      * Get the attributes that should be cast.
      *
