@@ -13,11 +13,13 @@ use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Hash;
@@ -33,7 +35,7 @@ class UserResource extends Resource
 
     public static function canAccess(): bool
     {
-        return \auth()->user()->email === \config('admin.email');
+        return \auth()->user()->is_admin;
     }
 
     public static function form(Schema $schema): Schema
@@ -61,6 +63,11 @@ class UserResource extends Resource
                             // Require the password ONLY on the 'create' page, not the 'edit' page
                             ->required(static fn (string $operation): bool => $operation === 'create')
                             ->maxLength(255),
+
+                        Toggle::make('is_admin')
+                            ->label('Administrator')
+                            ->helperText('Grants access to manage other users.'),
+
                     ])
                     ->columns(2),
             ]);
@@ -70,6 +77,10 @@ class UserResource extends Resource
     {
         return $table
             ->columns([
+                IconColumn::make('is_admin')
+                    ->label('Admin')
+                    ->boolean(),
+
                 TextColumn::make('name')
                     ->searchable()
                     ->sortable(),

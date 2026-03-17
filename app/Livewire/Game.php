@@ -22,7 +22,7 @@ final class Game extends Component
 
     public function mount(?string $id = null): void
     {
-        $query = Puzzle::with('categories.words')
+        $query = Puzzle::with(['categories.words', 'user'])
             ->where('is_published', true)
             ->whereDate('play_date', '<=', \now());
 

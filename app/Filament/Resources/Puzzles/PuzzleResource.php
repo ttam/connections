@@ -26,6 +26,7 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class PuzzleResource extends Resource
 {
@@ -97,6 +98,21 @@ class PuzzleResource extends Resource
                     ->columnSpanFull()
                     ->columns(4)
             ]);
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        $query = parent::getEloquentQuery();
+
+        // Maybe one day
+        /*
+        if (\auth()->user()->is_admin) {
+            return $query;
+        }
+        */
+
+        // For standard users, strictly scope the query to their own ID
+        return $query->where('user_id', \auth()->id());
     }
 
     public static function infolist(Schema $schema): Schema

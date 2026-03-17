@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
         ], [
             'name' => \config('admin.name'),
             'password' => Hash::make(\config('admin.password')),
+            'is_admin' => true,
         ]);
 
         $this->call([

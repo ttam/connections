@@ -27,7 +27,12 @@
 
             <div>
                 <h1 class="text-3xl font-bold font-serif">Connections</h1>
-                <p class="text-gray-600 mt-1 font-medium">{{ $puzzle->title }}</p>
+                <p class="text-gray-600 mt-1 font-medium">
+                    {{ $puzzle->title }}
+                    @if($puzzle->user)
+                        <span class="text-gray-400 font-normal">by {{ $puzzle->user->name }}</span>
+                    @endif
+                </p>
             </div>
 
             <form method="POST" action="{{ route('filament.admin.auth.logout') }}" class="absolute right-0">
