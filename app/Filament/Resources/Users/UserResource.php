@@ -33,7 +33,7 @@ class UserResource extends Resource
 
     public static function canAccess(): bool
     {
-        return \auth()->user()->email === \env('ADMIN_EMAIL');
+        return \auth()->user()->email === \config('admin.email');
     }
 
     public static function form(Schema $schema): Schema

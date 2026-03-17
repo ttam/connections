@@ -19,10 +19,10 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         User::updateOrCreate([
-            'email' => \env('ADMIN_EMAIL'),
+            'email' => \config('admin.email'),
         ], [
-            'name' => \env('ADMIN_NAME'),
-            'password' => Hash::make(\env('ADMIN_PASSWORD')),
+            'name' => \config('admin.name'),
+            'password' => Hash::make(\config('admin.password')),
         ]);
 
         $this->call([

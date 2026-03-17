@@ -12,7 +12,7 @@ class LoginResponse implements LoginResponseContract
 {
     public function toResponse($request): RedirectResponse | Redirector
     {
-        if (\auth()->user()->email === \env('ADMIN_EMAIL')) {
+        if (\auth()->user()->email === \config('admin.email')) {
             return \redirect()->intended(\route('filament.admin.pages.dashboard'));
         }
 
