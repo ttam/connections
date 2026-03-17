@@ -14,8 +14,10 @@ final class Game extends Component
     public Collection $boardWords;
     public array $selectedWordIds = [];
     public array $solvedCategoryIds = [];
-    public int $mistakesRemaining = 4;
+    public ?int $mistakesRemaining = 4;
     public string $gameStatus = 'playing'; // 'playing', 'won', or 'lost'
+
+    public array $guesses = [];
 
     public function mount(): void
     {
@@ -26,6 +28,7 @@ final class Game extends Component
             ->orderBy('play_date', 'desc')
             ->firstOrFail();
 
+        $this->mistakesRemaining = $this->puzzle->max_mistakes;
         $this->initializeBoard();
     }
 
@@ -71,6 +74,29 @@ final class Game extends Component
         $this->selectedWordIds = [];
     }
 
+    public function getShareText()
+    {
+        // 1. Start with the title and puzzle identifier (you could use the date here instead)
+        $text = "Connections\n";
+        $text .= "Puzzle #" . $this->puzzle->id . "\n";
+
+        // 2. Loop through the guesses array and map the numbers to colored emojis
+        foreach ($this->guesses as $guessRow) {
+            foreach ($guessRow as $difficultyLevel) {
+                $text .= match ((int) $difficultyLevel) {
+                    1 => '🟨',
+                    2 => '🟩',
+                    3 => '🟦',
+                    4 => '🟪',
+                    default => '⬜', // Fallback
+                };
+            }
+            $text .= "\n"; // New line at the end of each row
+        }
+
+        return $text;
+    }
+
     public function submit(): void
     {
         if (\count($this->selectedWordIds) !== 4 || $this->gameStatus !== 'playing') {
@@ -79,7 +105,9 @@ final class Game extends Component
 
         $selectedWords = $this->boardWords->whereIn('id', $this->selectedWordIds);
 
-        // Group by category to see how many categories are represented in the guess
+        $guessColors = $selectedWords->map->category->pluck('difficulty_level')->sort()->values()->toArray();
+        $this->guesses[] = $guessColors;
+
         $categoryCounts = $selectedWords->groupBy('category_id')->map->count();
 
         if ($categoryCounts->count() === 1) {
@@ -98,8 +126,6 @@ final class Game extends Component
             }
         } else {
             // Incorrect guess
-            $this->mistakesRemaining--;
-
             if ($categoryCounts->max() === 3) {
                 // 3 words match, 1 is wrong
                 $this->dispatch('toast', message: 'One away!');
@@ -110,12 +136,16 @@ final class Game extends Component
             // Trigger Alpine.js shake animation
             $this->dispatch('shake-tiles');
 
-            // Check for loss condition
-            if ($this->mistakesRemaining === 0) {
-                $this->gameStatus = 'lost';
-                $this->solvedCategoryIds = $this->puzzle->categories->pluck('id')->toArray();
-                $this->rebuildBoard(\collect()); // Rebuild with 0 unsolved words to reveal the board
-                $this->selectedWordIds = [];
+            // 2. Handle Mistakes (Only decrement if not unlimited)
+            if ($this->mistakesRemaining !== null) {
+                $this->mistakesRemaining--;
+
+                if ($this->mistakesRemaining <= 0) {
+                    $this->gameStatus = 'lost';
+                    $this->solvedCategoryIds = $this->puzzle->categories->pluck('id')->toArray();
+                    $this->rebuildBoard(\collect());
+                    $this->selectedWordIds = [];
+                }
             }
         }
     }

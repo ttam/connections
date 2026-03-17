@@ -45,6 +45,14 @@ class PuzzleResource extends Resource
                         Toggle::make('is_published')
                             ->default(false)
                             ->helperText('Publishing will make this puzzle live on its designated date.'),
+                        Toggle::make('show_live_results')
+                            ->default(false)
+                            ->helperText('Show the grid of colored squares to the player as they guess.'),
+                        TextInput::make('max_mistakes')
+                            ->numeric()
+                            ->placeholder('Leave blank for unlimited')
+                            ->default(4)
+                            ->helperText('Number of mistakes allowed before game over. Blank = unlimited.')
                     ])->columns(2),
 
                 Repeater::make('categories')
