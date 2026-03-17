@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Livewire;
 
 use App\Models\Puzzle;
+use App\Models\PuzzleProgress;
 use Illuminate\Support\Collection;
 use Livewire\Component;
 
@@ -30,7 +31,12 @@ final class Game extends Component
             : $query->findOrFail($id);
 
         $this->mistakesRemaining = $this->puzzle->max_mistakes;
-        $this->initializeBoard();
+
+        $loaded = $this->loadProgress();
+
+        if ($loaded === false) {
+            $this->initializeBoard();
+        }
     }
 
     public function initializeBoard(): void
@@ -39,6 +45,8 @@ final class Game extends Component
         $this->boardWords = $this->puzzle->categories
             ->flatMap->words
             ->shuffle();
+
+        $this->saveProgress();
     }
 
     public function toggleSelection($wordId): void
@@ -68,6 +76,8 @@ final class Game extends Component
         })->shuffle();
 
         $this->rebuildBoard($unsolvedWords);
+
+        $this->saveProgress();
     }
 
     public function deselectAll(): void
@@ -149,11 +159,80 @@ final class Game extends Component
                 }
             }
         }
+
+        $this->saveProgress();
     }
 
     public function render()
     {
         return \view('livewire.game');
+    }
+
+    private function loadProgress(): bool
+    {
+        $state = null;
+
+        // 1. Fetch the state from the DB (if logged in) or the Session (if guest)
+        if (\auth()->check()) {
+            $progress = PuzzleProgress::where('user_id', \auth()->id())
+                ->where('puzzle_id', $this->puzzle->id)
+                ->first();
+
+            if ($progress) {
+                $state = $progress->toArray();
+            }
+        } else {
+            $state = \session()->get('puzzle_progress_' . $this->puzzle->id);
+        }
+
+        if (!$state) {
+            return false; // No progress found
+        }
+
+        // 2. Hydrate the Livewire properties
+        $this->guesses = $state['guesses'] ?? [];
+        $this->solvedCategoryIds = $state['solved_category_ids'] ?? [];
+        $this->mistakesRemaining = $state['mistakes_remaining'];
+        $this->gameStatus = $state['game_status'] ?? 'playing';
+
+        $allWords = $this->puzzle->categories->flatMap->words;
+
+        // 3. Reconstruct the board words in the exact order they were saved
+        if (!empty($state['current_word_order'])) {
+            $this->boardWords = \collect($state['current_word_order'])
+                ->map(static fn ($wordId) => $allWords->firstWhere('id', $wordId))
+                ->filter()
+                ->values();
+        } else {
+            $this->boardWords = $allWords->shuffle();
+        }
+
+        return true;
+    }
+
+    private function saveProgress(): void
+    {
+        // 1. Package the current state
+        $state = [
+            'guesses' => $this->guesses,
+            'solved_category_ids' => $this->solvedCategoryIds,
+            'current_word_order' => $this->boardWords->pluck('id')->toArray(),
+            'mistakes_remaining' => $this->mistakesRemaining,
+            'game_status' => $this->gameStatus,
+        ];
+
+        // 2. Save to the DB (if logged in) or the Session (if guest)
+        if (\auth()->check()) {
+            PuzzleProgress::updateOrCreate(
+                [
+                    'user_id' => \auth()->id(),
+                    'puzzle_id' => $this->puzzle->id,
+                ],
+                $state
+            );
+        } else {
+            \session()->put('puzzle_progress_' . $this->puzzle->id, $state);
+        }
     }
 
     private function rebuildBoard(Collection $unsolvedWords): void
