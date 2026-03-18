@@ -3,7 +3,18 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Connections Clone</title>
+    <title>@yield('title', 'Clonections')</title>
+
+    <meta property="og:title" content="@yield('title', 'Clonections')" />
+    <meta property="og:description" content="@yield('description', 'Can you find the hidden threads? Play today\'s puzzle.')" />
+    <meta property="og:url" content="{{ url()->current() }}" />
+    <meta property="og:type" content="website" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="@yield('title', 'Clonections')" />
+    <meta name="twitter:description" content="@yield('description', 'Can you find the hidden threads? Play today\'s puzzle.')" />
+
+    @yield('og_tags')
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 

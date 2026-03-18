@@ -88,7 +88,7 @@ final class Game extends Component
     public function getShareText()
     {
         // 1. Start with the title and puzzle identifier (you could use the date here instead)
-        $text = "Connections\n";
+        $text = "Clonections\n";
         $text .= "Puzzle #" . $this->puzzle->id . "\n";
 
         // 2. Loop through the guesses array and map the numbers to colored emojis

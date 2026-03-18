@@ -1,3 +1,10 @@
+@section('title', 'Clonections - ' . $puzzle->title)
+
+@section('og_tags')
+    <meta property="og:image" content="{{ route('game.image', $puzzle->id) }}" />
+    <meta name="twitter:image" content="{{ route('game.image', $puzzle->id) }}" />
+@endsection
+
 <div class="{{ $puzzle->show_live_results ? 'max-w-5xl md:grid md:grid-cols-2 md:gap-12 md:items-start' : 'max-w-2xl' }} mx-auto p-4 select-none relative"
      x-data="{
         shake: false,
@@ -26,7 +33,7 @@
             </a>
 
             <div>
-                <h1 class="text-3xl font-bold font-serif">Connections</h1>
+                <h1 class="text-3xl font-bold font-serif">Clonections</h1>
                 <p class="text-gray-600 dark:text-gray-400 mt-1 font-medium">
                     {{ $puzzle->title }}
                     @if($puzzle->user)

@@ -1,3 +1,6 @@
+@section('title', 'Clonections - Puzzle Archive')
+@section('description', 'Browse and play past puzzles.')
+
 <div class="max-w-4xl mx-auto p-4">
     <div class="text-center mb-6 relative w-full flex justify-center items-center min-h-[40px]">
 
