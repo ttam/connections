@@ -11,14 +11,14 @@
      @shake-tiles.window="shake = true; setTimeout(() => shake = false, 500)">
 
     <div x-show="toast" x-transition.opacity x-text="toast" style="display: none;"
-         class="fixed top-10 left-1/2 transform -translate-x-1/2 bg-black text-white px-4 py-2 rounded shadow-lg z-50">
+         class="fixed top-10 left-1/2 transform -translate-x-1/2 bg-black text-white px-4 py-2 rounded shadow-lg z-50 dark:bg-white dark:text-black ">
     </div>
 
     <div class="w-full max-w-2xl mx-auto flex flex-col items-center">
 
         <div class="text-center mb-6 relative w-full flex justify-center items-center min-h-[40px]">
 
-            <a href="{{ route('archive') }}" wire:navigate class="absolute left-0 text-sm font-semibold text-gray-500 hover:text-black flex items-center gap-1 transition-colors">
+            <a href="{{ route('archive') }}" wire:navigate class="absolute left-0 text-sm font-semibold text-gray-500 hover:text-primary-600 dark:text-gray-400 dark:hover:text-primary-400 flex items-center gap-1 transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
                 </svg>
@@ -27,17 +27,17 @@
 
             <div>
                 <h1 class="text-3xl font-bold font-serif">Connections</h1>
-                <p class="text-gray-600 mt-1 font-medium">
+                <p class="text-gray-600 dark:text-gray-400 mt-1 font-medium">
                     {{ $puzzle->title }}
                     @if($puzzle->user)
-                        <span class="text-gray-400 font-normal">by {{ $puzzle->user->name }}</span>
+                        <span class="text-gray-400 dark:text-gray-500 font-normal">by {{ $puzzle->user->name }}</span>
                     @endif
                 </p>
             </div>
 
             <form method="POST" action="{{ route('filament.admin.auth.logout') }}" class="absolute right-0">
                 @csrf
-                <button type="submit" class="text-sm font-semibold text-gray-500 hover:text-black transition-colors">
+                <button type="submit" class="cursor-pointer text-sm font-semibold text-gray-500 hover:text-primary-600 dark:text-gray-400 dark:hover:text-primary-400 transition-colors">
                     Log Out
                 </button>
             </form>
@@ -53,7 +53,7 @@
                         $categoryWords = $category->words->pluck('text')->join(', ');
                     @endphp
 
-                    <div class="w-full rounded-lg flex flex-col items-center justify-center text-center p-4 animate-fade-in
+                    <div class="w-full rounded-lg flex flex-col items-center justify-center text-center p-4 animate-fade-in text-gray-900
                         {{ match((int) $category->difficulty_level) {
                             1 => 'bg-yellow-300',
                             2 => 'bg-green-300',
@@ -76,7 +76,9 @@
                     <button wire:click="toggleSelection('{{ $word->id }}')"
                             @disabled($gameStatus !== 'playing')
                             class="col-span-1 aspect-[4/3] rounded-lg flex items-center justify-center font-bold text-center p-2 uppercase transition-all duration-150 active:scale-95
-                            {{ $isSelected ? 'bg-gray-600 text-white' : 'bg-gray-200 text-black hover:bg-gray-300' }}">
+                            {{ $isSelected
+                                ? 'bg-gray-600 text-white dark:bg-gray-500'
+                                : 'bg-gray-200 text-black hover:bg-gray-300 dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700' }}">
                         {{ $word->text }}
                     </button>
                 @endforeach
@@ -86,26 +88,28 @@
 
         @if($puzzle->max_mistakes !== null)
             <div class="flex items-center justify-center gap-2 mb-6 h-4">
-                <span class="text-gray-600 text-sm">Mistakes remaining:</span>
+                <span class="text-gray-600 dark:text-gray-400 text-sm">Mistakes remaining:</span>
                 <div class="flex gap-2">
                     @for($i = 0; $i < $mistakesRemaining; $i++)
-                        <div class="w-3 h-3 rounded-full bg-gray-600"></div>
+                        <div class="w-3 h-3 rounded-full bg-gray-600 dark:bg-gray-500"></div>
                     @endfor
                 </div>
             </div>
         @endif
 
         <div class="flex justify-center gap-3">
-            <button wire:click="shuffle" class="px-5 py-3 rounded-full border border-black font-semibold hover:bg-gray-100 transition active:scale-95">
+            <button wire:click="shuffle" class="px-5 py-3 rounded-full border border-black dark:border-gray-500 font-semibold hover:bg-gray-100 dark:hover:bg-gray-800 transition active:scale-95">
                 Shuffle
             </button>
-            <button wire:click="deselectAll" class="px-5 py-3 rounded-full border border-black font-semibold hover:bg-gray-100 transition active:scale-95 disabled:opacity-50 disabled:border-gray-300 disabled:text-gray-400 disabled:hover:bg-transparent"
+            <button wire:click="deselectAll" class="px-5 py-3 rounded-full border border-black dark:border-gray-500 font-semibold hover:bg-gray-100 dark:hover:bg-gray-800 transition active:scale-95 disabled:opacity-50 disabled:border-gray-300 disabled:text-gray-400 dark:disabled:border-gray-700 dark:disabled:text-gray-600 disabled:hover:bg-transparent dark:disabled:hover:bg-transparent"
                 @disabled(empty($selectedWordIds))>
                 Deselect All
             </button>
             <button wire:click="submit"
                     class="px-5 py-3 rounded-full border font-semibold transition active:scale-95
-                           {{ count($selectedWordIds) === 4 ? 'border-black bg-black text-white hover:bg-gray-800' : 'border-gray-300 text-gray-400 cursor-not-allowed' }}"
+                           {{ count($selectedWordIds) === 4
+                                ? 'border-primary-600 bg-primary-600 text-white hover:bg-primary-700 dark:border-primary-500 dark:bg-primary-500 dark:text-gray-950 dark:hover:bg-primary-400'
+                                : 'border-gray-300 text-gray-400 cursor-not-allowed dark:border-gray-700 dark:text-gray-600' }}"
                 @disabled(count($selectedWordIds) !== 4 || $gameStatus !== 'playing')>
                 Submit
             </button>
@@ -113,13 +117,13 @@
 
         @if($gameStatus !== 'playing')
             <div class="mt-8 flex flex-col items-center gap-4">
-                <div class="text-2xl font-bold {{ $gameStatus === 'won' ? 'text-green-600 animate-bounce' : 'text-red-600' }}">
+                <div class="text-2xl font-bold {{ $gameStatus === 'won' ? 'text-green-600 dark:text-green-500 animate-bounce' : 'text-red-600 dark:text-red-500' }}">
                     {{ $gameStatus === 'won' ? 'Perfect!' : 'Next time!' }}
                 </div>
 
                 <button x-data="{ shareString: @js($this->getShareText()) }"
                         @click="navigator.clipboard.writeText(shareString).then(() => { $dispatch('toast', { message: 'Copied to clipboard!' }) })"
-                        class="px-8 py-3 rounded-full bg-black text-white font-bold hover:bg-gray-800 transition active:scale-95 flex items-center gap-2">
+                        class="cursor-pointer px-8 py-3 rounded-full bg-primary-600 text-white dark:bg-primary-500 dark:text-gray-950 font-bold hover:bg-primary-700 dark:hover:bg-primary-400 transition active:scale-95 flex items-center gap-2">
                     Share Result
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 1 0 0 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186 9.566-5.314m-9.566 7.5 9.566 5.314m0 0a2.25 2.25 0 1 0 3.935 2.186 2.25 2.25 0 0 0-3.935-2.186Zm0-12.814a2.25 2.25 0 1 0 3.933-2.185 2.25 2.25 0 0 0-3.933 2.185Z" />
@@ -131,10 +135,10 @@
     </div>
 
     @if($puzzle->show_live_results)
-        <div class="mt-12 md:mt-0 md:sticky md:top-10 flex flex-col items-center pt-8 border-t md:border-t-0 md:border-l md:pt-0 border-gray-200 md:min-h-[400px]">
+        <div class="mt-12 md:mt-0 md:sticky md:top-10 flex flex-col items-center pt-8 border-t md:border-t-0 md:border-l md:pt-0 border-gray-200 dark:border-gray-800 md:min-h-[400px]">
 
             @if(count($guesses) > 0)
-                <h3 class="text-sm font-bold uppercase tracking-widest text-gray-500 mb-4">Your Guesses</h3>
+                <h3 class="text-sm font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-4">Your Guesses</h3>
 
                 <div class="flex flex-col gap-1">
                     @foreach($guesses as $guessRow)
@@ -146,7 +150,7 @@
                                         2 => 'bg-green-300',
                                         3 => 'bg-blue-300',
                                         4 => 'bg-purple-300',
-                                        default => 'bg-gray-300',
+                                        default => 'bg-gray-300 dark:bg-gray-600',
                                     } }}">
                                 </div>
                             @endforeach
@@ -154,7 +158,7 @@
                     @endforeach
                 </div>
             @else
-                <h3 class="text-sm font-bold uppercase tracking-widest text-gray-400 mb-4">Awaiting Guesses</h3>
+                <h3 class="text-sm font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-4">Awaiting Guesses</h3>
             @endif
 
         </div>
